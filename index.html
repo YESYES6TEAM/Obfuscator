@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SPRINGTRAP LEVEL 5</title>
+<style>
+body{background:#05010c;color:#b68cff;font-family:monospace}
+textarea{width:100%;height:220px;background:#0d0620;color:#fff;border:1px solid #3c1a6e}
+button{padding:12px 20px;background:#7a3cff;color:#fff;border:none;margin:10px 0}
+</style>
+</head>
+<body>
+
+<h2>SPRINGTRAP • LEVEL 5 OBFUSCATOR</h2>
+<textarea id="i" placeholder="Lua input"></textarea>
+<button onclick="obf()">OBFUSCATE</button>
+<textarea id="o" placeholder="Protected output"></textarea>
+
+<script>
+const rn=()=> "v"+Math.floor(Math.random()*9999)
+const ri=()=> Math.floor(Math.random()*999)
+const ar=()=> `${ri()}-(${ri()}+${ri()})`
+
+function encStr(s,k){
+ let o=[]
+ for(let i=0;i<s.length;i++)
+  o.push("\\"+(((s.charCodeAt(i)^k)+i)%256))
+ return `"${o.join("")}"`
+}
+
+function encNum(n){
+ let a=Math.floor(Math.random()*500)
+ let b=n+a
+ return `(${b}-${a})`
+}
+
+function obf(){
+ let src=document.getElementById("i").value
+ if(!src)return
+
+ let key=Math.floor(Math.random()*200)+60
+ let poolKey="\\126\\177\\163\\187\\69\\134\\219"
+
+ let V=[...Array(20)].map(rn)
+
+ let junk=""
+ for(let i=0;i<20;i++)
+  junk+=`local ${rn()}=${ar()};`
+
+ let out=`-- PROTECTED BY SPRINGTRAP
+
+local ${V[0]}=string.char
+local ${V[1]}=string.byte
+local ${V[2]}=string.sub
+local ${V[3]}=bit32 or bit
+local ${V[4]}=${V[3]}.bxor
+local ${V[5]}=table.insert
+local ${V[6]}=table.concat
+
+${junk}
+
+local function ${V[7]}(${V[8]},${V[9]})
+ local ${V[10]}={}
+ local ${V[11]}=0
+ while true do
+  if ${V[11]}==${encNum(1)} then
+   for i=1,#${V[8]} do
+    ${V[5]}(${V[10]},
+     ${V[0]}(
+      ${V[4]}(
+       ${V[1]}(${V[2]}(${V[8]},i,i+1)),
+       (${V[1]}(${V[2]}(${V[9]},1+(i%#${V[9]}),2+(i%#${V[9]})))+i)%256
+      )
+     )
+    )
+   end
+   break
+  end
+  ${V[11]}=${V[11]}+1
+ end
+ return ${V[6]}(${V[10]})
+end
+
+local ${V[12]}={
+ [${encNum(0)}]=${encStr(src,key)}
+}
+
+local ${V[13]}=0
+local ${V[14]}=nil
+
+while true do
+ if ${V[13]}==${encNum(2)} then
+  ${V[14]}=${V[7]}(${V[12]}[${encNum(0)}],${encStr(poolKey,0)})
+  break
+ end
+ if ${V[13]}==${encNum(0)} then
+  ${V[13]}=${V[13]}+1
+ elseif ${V[13]}==${encNum(1)} then
+  ${V[13]}=${V[13]}+1
+ else
+  ${V[13]}=${encNum(999)}
+ end
+end
+
+local ${V[15]}=(${encNum(0)})
+repeat
+ ${V[15]}=${V[15]}+1
+until ${V[15]}==${encNum(3)}
+
+(${V[7]})(${V[14]},${encStr(poolKey,0)})()
+`
+
+ document.getElementById("o").value=out
+}
+</script>
+
+</body>
+</html>
